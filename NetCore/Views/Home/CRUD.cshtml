@@ -1,0 +1,158 @@
+﻿@model NetCore.ViewModels.CURDViewModel
+@{
+    //List<Member2> Data = ViewBag.Member2;
+}
+<style>
+    td {
+        padding: 10px;
+        border: solid;
+        border-color: black;
+        text-align: center;
+    }
+</style>
+
+<h3>實作註冊會員功能</h3>
+
+<form action="/Home/Create" method="post">
+    @*Name <input id="Name" name="Name" maxlength="30" /><br />
+    Phone <input id="Phone" name="Phone" maxlength="10" /><br />
+    Tel <input id="Tel" name="Tel" maxlength="10" /><br />
+    Gender <input id="Gender" name="Gender" maxlength="1" /><br />
+    Birthday <input id="Birthday" name="Birthday" type="datetime" /><br />*@
+
+    @Html.AntiForgeryToken()
+    
+    <input id="ID" type="hidden" />
+    Name @Html.EditorFor(x => x.Name)<br />
+    Phone @Html.EditorFor(x => x.Phone)<br />
+    Tel @Html.EditorFor(x => x.Tel)<br />
+    Gender @Html.EditorFor(x => x.Gender)<br />
+    Birthday @Html.EditorFor(x => x.Birthday)<br />
+
+    <button id="Create" type="submit">新增資料</button>
+</form>
+<form id="DeleteForm" action="/Home/Delete" method="post">
+    <input type="hidden" id="DeleteID" name="DeleteID" />
+</form>
+<form id="UpdateForm" action="/Home/Update" method="post">
+    <input id="UID" type="hidden" name="ID" />
+    <input id="UName" type="hidden" name="Name" />
+    <input id="UPhone" type="hidden" name="Phone" />
+    <input id="UTel" type="hidden" name="Tel" />
+    <input id="UGender" type="hidden" name="Gender" />
+    <input id="UBirthday" type="hidden" name="Birthday" />
+</form>
+<table>
+    <tr>
+        <td>ID</td>
+        <td>Name</td>
+        <td>Phone</td>
+        <td>Tel</td>
+        <td>Gender</td>
+        <td>Birthday</td>
+        <td>修改</td>
+        <td>刪除</td>
+    </tr>
+    @foreach (var it in Model.DataList)
+    {
+<tr>
+    <td>@it.ID.ToString()</td>
+    <td>@it.Name</td>
+    <td>@it.Phone</td>
+    <td>@it.Tel</td>
+    <td>@it.Gender</td>
+    <td>@it.Birthday.ToString("yyyyMMdd")</td>
+    <td>
+        <button onclick="updateItem('@it.ID.ToString()','@it.Name','@it.Phone','@it.Tel','@it.Gender','@it.Birthday.ToString("yyyy-MM-ddTHH:mm:ss")')">代入</button>
+        <button onclick="updateItem2('@it.ID.ToString()')">代入ajax</button>
+        <button onclick="updateSubmit('@it.ID.ToString()')">修改送出</button>
+        <button onclick="updateSubmit2('@it.ID.ToString()')">修改送出ajax</button>
+    </td>
+    <td>
+        <button onclick="deleteItem('@it.ID.ToString()')">刪除</button>
+    </td>
+</tr>
+    }
+</table>
+
+<a href="@Url.Action("CRUD","Home")">CRUD</a>
+
+<script>
+    function deleteItem(ID) {
+        debugger
+        $("#DeleteID").val(ID);
+        $("#DeleteForm").submit();
+    }
+    function updateItem(ID, Name, Phone, Tel, Gender, Birthday) {
+        debugger
+        $("#ID").val(ID);
+        $("#Name").val(Name);
+        $("#Phone").val(Phone);
+        $("#Tel").val(Tel);
+        $("#Gender").val(Gender);
+        $("#Birthday").val(Birthday);
+    }
+    function updateItem2(ID) {
+        debugger
+        var originURL = '@Model.Url';
+        $.post(originURL + "/Home/getData", { ID: ID }, function (rs, status) {
+            debugger
+            $("#ID").val(rs.id);
+            $("#Name").val(rs.name);
+            $("#Phone").val(rs.phone);
+            $("#Tel").val(rs.tel);
+            $("#Gender").val(rs.gender);
+            $("#Birthday").val(rs.birthday);
+
+        });
+
+    }
+
+    function updateSubmit(ID) {
+        debugger
+
+        if ($("#ID").val() != ID) {
+            //alert("ID不對");
+            console.log("ID不對");
+            return;
+        }
+
+        $("#UID").val(ID);
+        $("#UName").val($("#Name").val());
+        $("#UPhone").val($("#Phone").val());
+        $("#UTel").val($("#Tel").val());
+        $("#UGender").val($("#Gender").val());
+        $("#UBirthday").val($("#Birthday").val());
+
+        $("#UpdateForm").submit();
+    }
+
+    function updateSubmit2(ID) {
+        debugger
+        if ($("#ID").val() != ID) {
+            //alert("ID不對");
+            console.log("ID不對");
+            return;
+        }
+        let member2 = {
+            ID: ID,
+            Name: $("#Name").val(),
+            Phone: $("#Phone").val(),
+            Tel: $("#Tel").val(),
+            Gender: $("#Gender").val(),
+            Birthday: $("#Birthday").val(),
+        };
+
+        var originURL = '@Model.Url';
+
+        $.post('@Url.Action("Update_ver2")', member2, function (rs, status) {
+            debugger
+            window.location.href = '@Url.Action("CRUD","Home")';
+        });
+
+        @*$.post(originURL + "/Home/Update_ver2", member2, function (rs, status) {
+            debugger
+            //window.location.href = '@Url.Action("CRUD","Home")';
+        });*@
+    }
+</script>

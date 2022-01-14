@@ -1,0 +1,30 @@
+﻿
+@using NetCore.Service;
+@{
+    ISingle single = ViewBag.SingleTemp;
+    IScoped scoped = ViewBag.ScopedTemp;
+    ITransient transient = ViewBag.TransientTemp;
+}
+<h3>demo Dependency Injection</h3>
+<table>
+    <tr>
+        <td>DI</td>
+        <td>Count</td>
+        <td>HashValue</td>
+    </tr>
+    <tr>
+        <td>single</td>
+        <td>@single.Id</td>
+        <td>@single.GetHashCode()</td>
+    </tr>
+    <tr>
+        <td>scoped</td>
+        <td>@scoped.Id</td>
+        <td>@scoped.GetHashCode()</td>
+    </tr>
+    <tr>
+        <td>transient</td>
+        <td>@transient.Id</td>
+        <td>@transient.GetHashCode()</td>
+    </tr>
+</table>
